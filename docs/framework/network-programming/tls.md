@@ -240,14 +240,6 @@ These keys are available in all .NET Framework versions.
 
 All of the registry keys described below have the same effect whether you're doing HTTP networking (<xref:System.Net.ServicePointManager>) or TCP sockets networking (<xref:System.Net.Security.SslStream>).
 
-### SchUseStrongCrypto
-
-The `HKEY_LOCAL_MACHINE\SOFTWARE\[Wow6432Node\]Microsoft\.NETFramework\<VERSION>: SchUseStrongCrypto` registry entry has a value of type DWORD. A value of 1 causes your app to use strong cryptography. The strong cryptography uses more secure network protocols (TLS 1.2 and TLS 1.1) and blocks protocols that aren't secure. A value of 0 disables strong cryptography. For more information, see [The SCH_USE_STRONG_CRYPTO flag](#the-sch_use_strong_crypto-flag). This registry setting affects only client (outgoing) connections in your application.
-
-If your app targets .NET Framework 4.6 or later versions, this key defaults to a value of 1. That's a secure default that we recommend. If your app targets .NET Framework 4.5.2 or earlier versions, the key defaults to 0. In that case, you should explicitly set its value to 1.
-
-This key should only have a value of 0 if you need to connect to legacy services that don't support strong cryptography and can't be upgraded.
-
 ### SystemDefaultTlsVersions
 
 The `HKEY_LOCAL_MACHINE\SOFTWARE\[Wow6432Node\]Microsoft\.NETFramework\<VERSION>: SystemDefaultTlsVersions` registry entry has a value of type DWORD. A value of 1 causes your app to allow the operating system to choose the protocol. A value of 0 causes your app to use protocols picked by the .NET Framework.
