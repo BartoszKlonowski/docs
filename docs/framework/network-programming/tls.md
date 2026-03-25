@@ -250,7 +250,7 @@ For more information see: [TLS Registry Settings - Schannel](/windows-server/sec
 
 ## The SCH_USE_STRONG_CRYPTO flag
 
-When it's enabled (by default, by [an `AppContext` switch](#switchsystemnetdontenableschusestrongcrypto), or [by the Windows Registry](#schusestrongcrypto)), .NET Framework uses the `SCH_USE_STRONG_CRYPTO` flag when your app initiates a TLS connection to a server. .NET Framework passes the flag to `Schannel` to instruct it to disable known weak cryptographic algorithms, cipher suites, and TLS/SSL protocol versions that may be otherwise enabled for better interoperability. For more information, see:
+When it's enabled (by default, or by [an `AppContext` switch](#switchsystemnetdontenableschusestrongcrypto)), .NET Framework uses the `SCH_USE_STRONG_CRYPTO` flag when your app initiates a TLS connection to a server. .NET Framework passes the flag to `Schannel` to instruct it to disable known weak cryptographic algorithms, cipher suites, and TLS/SSL protocol versions that may be otherwise enabled for better interoperability. For more information, see:
 
 - [Secure Channel](/windows/desktop/SecAuthN/secure-channel)
 - [SCHANNEL_CRED structure](/windows/win32/api/schannel/ns-schannel-schannel_cred)
