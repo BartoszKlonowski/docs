@@ -127,17 +127,17 @@ namespace System.Net
 
 For more information, see [Support for TLS System Default Versions included in .NET Framework 3.5 on Windows 8.1 and Windows Server 2012 R2](https://support.microsoft.com/help/3154520/support-for-tls-system-default-versions-included-in-the--net-framework).
 
-## For System.Net APIs (HttpClient, SslStream)
+### For System.Net APIs (HttpClient, SslStream)
 
 The following sections show how to configure your application to use "currently considered secure versions" of TLS (namely TLS 1.2 and TLS 1.3) if it targets .NET Framework 4.7 or later.
 
-### For HttpClient and HttpWebRequest
+#### For HttpClient and HttpWebRequest
 
 <xref:System.Net.ServicePointManager> uses the default security protocol configured in the OS. To get the default OS choice, if possible, don't set a value for the <xref:System.Net.ServicePointManager.SecurityProtocol?displayProperty=nameWithType> property, which defaults to <xref:System.Net.SecurityProtocolType.SystemDefault?displayProperty=nameWithType>.
 
 Because the <xref:System.Net.SecurityProtocolType.SystemDefault?displayProperty=nameWithType> setting causes the <xref:System.Net.ServicePointManager> to use the default security protocol configured by the operating system, your application might run differently based on the OS it's run on. For example, Windows 10 uses TLS 1.2, while Windows 11 uses TLS 1.3.
 
-### For SslStream
+#### For SslStream
 
 <xref:System.Net.Security.SslStream> defaults to the security protocol and version chosen by the OS. To get the default OS best choice, if possible, don't use the method overloads of <xref:System.Net.Security.SslStream> that take an explicit <xref:System.Security.Authentication.SslProtocols> parameter. Otherwise, pass <xref:System.Security.Authentication.SslProtocols.None?displayProperty=nameWithType>. We recommend that you don't use <xref:System.Security.Authentication.SslProtocols.Default>; setting `SslProtocols.Default` forces the use of SSL 3.0 /TLS 1.0 and prevents TLS 1.2.
 
@@ -145,13 +145,13 @@ Don't set a value for the <xref:System.Net.ServicePointManager.SecurityProtocol>
 
 Don't use the method overloads of <xref:System.Net.Security.SslStream> that take an explicit <xref:System.Security.Authentication.SslProtocols> parameter (for TCP sockets networking). When you retarget your app to .NET Framework 4.7 or later versions, you'll be following the best practices recommendation.
 
-## For WCF apps
+### For WCF apps
 
 The following sections show how to configure your application to use "currently considered secure versions" of TLS (namely, TLS 1.2 and TLS 1.3).
 
-### [.NET Framework 4.7 and later](#tab/47-plus)
+#### [.NET Framework 4.7 and later](#tab/47-plus)
 
-### Using TCP transport using transport security with certificate credentials
+#### Using TCP transport using transport security with certificate credentials
 
 WCF uses the same networking stack as the rest of .NET Framework.
 
@@ -169,13 +169,13 @@ If you're using a custom binding:
 
 If you're **not** using a custom binding **and** you're setting your WCF binding using configuration, set the protocol used with the configuration path `system.serviceModel/bindings/netTcpBinding/binding/security/transport:sslProtocols`.
 
-### Using Message Security with certificate credentials
+#### Using Message Security with certificate credentials
 
 .NET Framework 4.7 and later versions by default use the protocol specified in the <xref:System.Net.ServicePointManager.SecurityProtocol> property. When the [AppContextSwitch](../configure-apps/file-schema/runtime/appcontextswitchoverrides-element.md) `Switch.System.ServiceModel.DisableUsingServicePointManagerSecurityProtocols` is set to `true`, WCF chooses the best protocol, up to TLS 1.0.
 
-### [.NET Framework 4.6.2 and earlier](#tab/462-minus)
+#### [.NET Framework 4.6.2 and earlier](#tab/462-minus)
 
-If you're using .NET Framework 4.6.2 with TCP transport security,he WCF framework automatically chooses the highest protocol available up to TLS 1.2 unless you explicitly configure a protocol version. For more information, see the section [Using TCP transport using transport security with certificate credentials](#using-tcp-transport-using-transport-security-with-certificate-credentials).
+If you're using .NET Framework 4.6.2, the WCF framework automatically chooses the highest protocol available up to TLS 1.2 unless you explicitly configure a protocol version. For more information, see the section [Using TCP transport using transport security with certificate credentials](#using-tcp-transport-using-transport-security-with-certificate-credentials).
 
 If you're using .NET Framework 3.5, this version of the WCF framework explicitly uses values SSL 3.0 and TLS 1.0. These values cannot be changed. You must update and retarget to NET Framework 4.6.2 or later versions to use TLS 1.2.
 
