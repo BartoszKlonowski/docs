@@ -2,7 +2,7 @@
 title: Transport Layer Security (TLS) best practices with .NET Framework
 titleSuffix: ""
 description: Describes best practices using Transport Layer Security (TLS) with .NET Framework
-ms.date: 03/18/2024
+ms.date: 04/01/2026
 helpviewer_keywords:
   - "sending data, Internet security"
   - "protocols, Internet security"
@@ -39,15 +39,15 @@ Since the .NET Framework is dependent on `Schannel` on Windows, which versions c
 
 Here is an updated example table showing the highest supported TLS version for different combinations of operating system versions and .NET Framework target versions:
 
-| .NET Framework Target Version | Windows 10 | Windows 11 |
-|-------------------------------|------------|------------|
-| 3.5                           | TLS 1.2    | TLS 1.2    |
-| 4.6.2                         | TLS 1.2    | **TLS 1.3**|
-| 4.7                           | TLS 1.2    | **TLS 1.3**|
-| 4.7.1                         | TLS 1.2    | **TLS 1.3**|
-| 4.7.2                         | TLS 1.2    | **TLS 1.3**|
-| 4.8                           | TLS 1.2    | **TLS 1.3**|
-| 4.8.1                         | TLS 1.2    | **TLS 1.3**|
+| .NET Framework Target Version | Windows 10 | Windows 11  |
+|-------------------------------|------------|-------------|
+| 3.5                           | TLS 1.2    | TLS 1.2     |
+| 4.6.2                         | TLS 1.2    | **TLS 1.3** |
+| 4.7                           | TLS 1.2    | **TLS 1.3** |
+| 4.7.1                         | TLS 1.2    | **TLS 1.3** |
+| 4.7.2                         | TLS 1.2    | **TLS 1.3** |
+| 4.8                           | TLS 1.2    | **TLS 1.3** |
+| 4.8.1                         | TLS 1.2    | **TLS 1.3** |
 
 For more information see [TLS protocol version support in Schannel](/windows/win32/secauthn/protocols-in-tls-ssl--schannel-ssp-#tls-protocol-version-support).
 
@@ -66,7 +66,7 @@ For more information see [TLS protocol version support in Schannel](/windows/win
 When your app lets the OS choose the TLS version:
 
 - It automatically takes advantage of new TLS protocols added in the future.
-- The OS blocks protocols that are discovered not to be secure (e.g. SSL3 and TLS 1.0).
+- The OS blocks protocols that are discovered not to be secure (for example, SSL3 and TLS 1.0).
 
 This article explains how to enable the strongest security available for the version of .NET Framework that your app targets and runs on. When an app explicitly sets a security protocol and version, it opts out of any other alternative, and opts out of .NET Framework and OS default behavior. If you want your app to be able to negotiate a TLS 1.3 connection, explicitly setting to a lower TLS version prevents a TLS 1.3 connection.
 
@@ -84,7 +84,7 @@ For Windows Forms and other applications, see [How to: Target a Version of the .
 
 Use the following sections to verify you're not using a specific TLS or SSL version.
 
-## If you must explicitly set a Security Protocol
+## Explicitly set a security protocol
 
 If you must explicitly set a security protocol instead of letting .NET or the OS pick the security protocol, pick these protocols:
 
@@ -129,33 +129,29 @@ For more information, see [Support for TLS System Default Versions included in .
 
 ## For System.Net APIs (HttpClient, SslStream)
 
-### If your app targets .NET Framework 4.7 or later versions
+The following sections show how to configure your application to use "currently considered secure versions" of TLS (namely TLS 1.2 and TLS 1.3) if it targets .NET Framework 4.7 or later.
 
-The following sections show how to configure your application to use `currently considered secure versions` of TLS. (TLS 1.2, TLS 1.3)
+### For HttpClient and HttpWebRequest
 
-#### For HttpClient and HttpWebRequest
+<xref:System.Net.ServicePointManager> uses the default security protocol configured in the OS. To get the default OS choice, if possible, don't set a value for the <xref:System.Net.ServicePointManager.SecurityProtocol?displayProperty=nameWithType> property, which defaults to <xref:System.Net.SecurityProtocolType.SystemDefault?displayProperty=nameWithType>.
 
-<xref:System.Net.ServicePointManager>, using .NET Framework 4.7 and later versions, will use the default security protocol configured in the OS. To get the default OS choice, if possible, don't set a value for the <xref:System.Net.ServicePointManager.SecurityProtocol?displayProperty=nameWithType> property, which defaults to <xref:System.Net.SecurityProtocolType.SystemDefault?displayProperty=nameWithType>.
+Because the <xref:System.Net.SecurityProtocolType.SystemDefault?displayProperty=nameWithType> setting causes the <xref:System.Net.ServicePointManager> to use the default security protocol configured by the operating system, your application might run differently based on the OS it's run on. For example, Windows 10 uses TLS 1.2, while Windows 11 uses TLS 1.3.
 
-Because the <xref:System.Net.SecurityProtocolType.SystemDefault?displayProperty=nameWithType> setting causes the <xref:System.Net.ServicePointManager> to use the default security protocol configured by the operating system, your application may run differently based on the OS it's run on. For example, Windows 10 uses TLS 1.2 while Windows 11 uses TLS 1.3.
+### For SslStream
 
-#### For SslStream
-
-<xref:System.Net.Security.SslStream>, using .NET Framework 4.7 and later versions, defaults to the OS choosing the best security protocol and version. To get the default OS best choice, if possible, don't use the method overloads of <xref:System.Net.Security.SslStream> that take an explicit <xref:System.Security.Authentication.SslProtocols> parameter. Otherwise, pass <xref:System.Security.Authentication.SslProtocols.None?displayProperty=nameWithType>. We recommend that you don't use <xref:System.Security.Authentication.SslProtocols.Default>; setting `SslProtocols.Default` forces the use of SSL 3.0 /TLS 1.0 and prevents TLS 1.2.
+<xref:System.Net.Security.SslStream> defaults to the security protocol and version chosen by the OS. To get the default OS best choice, if possible, don't use the method overloads of <xref:System.Net.Security.SslStream> that take an explicit <xref:System.Security.Authentication.SslProtocols> parameter. Otherwise, pass <xref:System.Security.Authentication.SslProtocols.None?displayProperty=nameWithType>. We recommend that you don't use <xref:System.Security.Authentication.SslProtocols.Default>; setting `SslProtocols.Default` forces the use of SSL 3.0 /TLS 1.0 and prevents TLS 1.2.
 
 Don't set a value for the <xref:System.Net.ServicePointManager.SecurityProtocol> property (for HTTP networking).
 
 Don't use the method overloads of <xref:System.Net.Security.SslStream> that take an explicit <xref:System.Security.Authentication.SslProtocols> parameter (for TCP sockets networking). When you retarget your app to .NET Framework 4.7 or later versions, you'll be following the best practices recommendation.
 
-<a name="wcf-tcp-cert"></a>
+## For WCF apps
 
-## For WCF Applications
+The following sections show how to configure your application to use "currently considered secure versions" of TLS (namely, TLS 1.2 and TLS 1.3).
 
-### If your app targets .NET Framework 4.7 or later versions
+### [.NET Framework 4.7 and later](#tab/47-plus)
 
-The following sections show how to configure your application to use `currently considered secure versions` of TLS. (TLS 1.2, TLS 1.3)
-
-#### Using TCP transport using transport security with certificate credentials
+### Using TCP transport using transport security with certificate credentials
 
 WCF uses the same networking stack as the rest of .NET Framework.
 
@@ -164,7 +160,7 @@ If you're targeting 4.7.1, WCF is configured to allow the OS to choose the best 
 - In your application configuration file.
 - **Or**, in your application in the source code.
 
-By default, .NET Framework 4.7 and later versions are configured to use TLS 1.2 and allow connections using TLS 1.1 or TLS 1.0. Configure WCF to allow the OS to choose the best security protocol by configuring your binding to use <xref:System.Security.Authentication.SslProtocols.None?displayProperty=nameWithType>. This can be set on <xref:System.ServiceModel.TcpTransportSecurity.SslProtocols>. `SslProtocols.None` can be accessed from <xref:System.ServiceModel.NetTcpSecurity.Transport>. `NetTcpSecurity.Transport` can be accessed from <xref:System.ServiceModel.NetTcpBinding.Security>.
+By default, .NET Framework 4.7 and later versions are configured to use TLS 1.2 and allow connections using TLS 1.1 or TLS 1.0. Configure WCF to allow the OS to choose the best security protocol by configuring your binding to use <xref:System.Security.Authentication.SslProtocols.None?displayProperty=nameWithType>. You can set this on <xref:System.ServiceModel.TcpTransportSecurity.SslProtocols>. `SslProtocols.None` can be accessed from <xref:System.ServiceModel.NetTcpSecurity.Transport>. `NetTcpSecurity.Transport` can be accessed from <xref:System.ServiceModel.NetTcpBinding.Security>.
 
 If you're using a custom binding:
 
@@ -173,27 +169,23 @@ If you're using a custom binding:
 
 If you're **not** using a custom binding **and** you're setting your WCF binding using configuration, set the protocol used with the configuration path `system.serviceModel/bindings/netTcpBinding/binding/security/transport:sslProtocols`.
 
-#### Using Message Security with certificate credentials
+### Using Message Security with certificate credentials
 
 .NET Framework 4.7 and later versions by default use the protocol specified in the <xref:System.Net.ServicePointManager.SecurityProtocol> property. When the [AppContextSwitch](../configure-apps/file-schema/runtime/appcontextswitchoverrides-element.md) `Switch.System.ServiceModel.DisableUsingServicePointManagerSecurityProtocols` is set to `true`, WCF chooses the best protocol, up to TLS 1.0.
 
-### If your app targets a .NET Framework version earlier than 4.7
+### [.NET Framework 4.6.2 and earlier](#tab/462-minus)
 
-The following sections show how to configure your application to use `currently considered secure versions` of TLS. (TLS 1.2, TLS 1.3)
+If you're using .NET Framework 4.6.2 with TCP transport security,he WCF framework automatically chooses the highest protocol available up to TLS 1.2 unless you explicitly configure a protocol version. For more information, see the section [Using TCP transport using transport security with certificate credentials](#using-tcp-transport-using-transport-security-with-certificate-credentials).
 
-#### Using .NET Framework 4.6.2 using TCP transport security with Certificate Credentials
+If you're using .NET Framework 3.5, this version of the WCF framework explicitly uses values SSL 3.0 and TLS 1.0. These values cannot be changed. You must update and retarget to NET Framework 4.6.2 or later versions to use TLS 1.2.
 
-The WCF framework automatically chooses the highest protocol available up to TLS 1.2 unless you explicitly configure a protocol version. For more information, see the preceding section [For WCF TCP transport using transport security with certificate credentials](#wcf-tcp-cert).
+---
 
-#### Using .NET Framework 3.5 using TCP transport security with Certificate Credentials
+## Configure security via AppContext switches
 
-These versions of the WCF framework are explicitly specified to use values SSL 3.0 and TLS 1.0. These values cannot be changed. You must update and retarget to NET Framework 4.6.2 or later versions to use TLS 1.2.
+The [AppContext](../configure-apps/file-schema/runtime/appcontextswitchoverrides-element.md) switches described in this section are relevant if your app targets, or runs on, .NET Framework 4.6.2 or a later version. Whether by default, or by setting them explicitly, the switches should be `false` if possible. If you want to configure security via one or both switches, then don't specify a security protocol value in your code; doing so overrides the switches.
 
-## Configure security via AppContext switches (for .NET Framework 4.6.2 or later versions)
-
-The [AppContext](../configure-apps/file-schema/runtime/appcontextswitchoverrides-element.md) switches described in this section are relevant if your app targets, or runs on, .NET Framework 4.6.2 or later versions. Whether by default, or by setting them explicitly, the switches should be `false` if possible. If you want to configure security via one or both switches, then don't specify a security protocol value in your code; doing so would override the switch(es).
-
-### For System.Net APIs (HttpClient, SslStream)
+### [HttpClient and SslStream](#tab/httpclient-sslstream)
 
 The switches have the same effect whether you're doing HTTP networking (<xref:System.Net.ServicePointManager>) or TCP sockets networking (<xref:System.Net.Security.SslStream>).
 
@@ -211,7 +203,7 @@ A value of `false` for `Switch.System.Net.DontEnableSystemDefaultTlsVersions` ca
 
 If your app targets .NET Framework 4.7 or later versions, this switch defaults to `false`. That's a secure default that we recommend. If your app runs on .NET Framework 4.7 or later versions, but targets an earlier version, the switch defaults to `true`. In that case, you should explicitly set it to `false`.
 
-### For WCF applications
+### [WCF apps](#tab/wcf)
 
 #### Switch.System.ServiceModel.DisableUsingServicePointManagerSecurityProtocols
 
@@ -227,22 +219,11 @@ For applications targeting .NET Framework 4.7.1 and later versions, this value d
 
 For more information about TLS protocols, see [Mitigation: TLS Protocols](../migration-guide/mitigation-tls-protocols.md). For more information about `AppContext` switches, see [`<AppContextSwitchOverrides> Element`](../configure-apps/file-schema/runtime/appcontextswitchoverrides-element.md).
 
-## Configure security via the Windows Registry
-
-> [!WARNING]
-> Setting registry keys affects all applications on the system. Use this option only if you are in full control of the machine and can control changes to the registry.
-
-If setting one or both `AppContext` switches isn't an option, you can control the security protocols that your app uses with the Windows Registry keys described in this section. You might not be able to use one or both the `AppContext` switches if your app runs on .NET Framework 3.5, or if you can't edit the configuration file. If you want to configure security with the registry, don't specify a security protocol value in your code; doing so overrides the registry setting.
-
-The names of the registry keys are similar to the names of the corresponding `AppContext` switches but without a `DontEnable` prepended to the name.
-
-These keys are available in all .NET Framework versions.
-
-All of the registry keys described below have the same effect whether you're doing HTTP networking (<xref:System.Net.ServicePointManager>) or TCP sockets networking (<xref:System.Net.Security.SslStream>).
+---
 
 ## Configure Schannel protocols in the Windows Registry
 
-You can use the registry for fine-grained control over the protocols that your client and/or server app negotiates. Your app's networking goes through Schannel (which is another name for [Secure Channel](/windows/desktop/SecAuthN/secure-channel)). By configuring `Schannel`, you can configure your app's behavior.
+You can use the registry for fine-grained control over the protocols that your client or server app negotiates. Your app's networking goes through Schannel (which is another name for [Secure Channel](/windows/desktop/SecAuthN/secure-channel)). By configuring `Schannel`, you can configure your app's behavior.
 
 Start with the `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols` registry key. Under that key you can create any subkeys in the set `TLS 1.2`, `TLS 1.3`. Under each of those subkeys, you can create subkeys `Client` and/or `Server`. Under `Client` and `Server`, you can create DWORD values `DisabledByDefault` (0 or 1) and `Enabled` (0 or 1).
 
